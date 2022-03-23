@@ -350,12 +350,10 @@ def main():
             os.mkdir("./cluster.%s" % i)
             os.mkdir("./cluster.%s/Sample_A/" % i)
             os.mkdir("./cluster.%s/Sample_B/" % i)
-            
-        #File for saving input to PrISM
+        # File for saving input to PrISM
         if args.prism:
             prism_file = 'cluster.'+str(i)+'.prism.npz'
             superposed_coords_cluster = []
-            
         # Create densities for all subunits for both sample A and sample B
         # as well as separately.
         gmd1 = precision_rmsd.GetModelDensity(
@@ -421,15 +419,23 @@ def main():
                 gmd2.add_subunits_density(superposed_ps)
                 print(model_index, file=sampleB_file)
             if args.prism:
-                superposed_coords = numpy.array([IMP.core.XYZ(p).get_coordinates() for p in superposed_ps])
-                superposed_coords_cluster.append(superposed_coords)
+                superposed_coords = \
+                    [IMP.core.XYZ(ps).get_coordinates()
+                        for ps in superposed_ps]
+                superposed_coords_cluster.append(
+                    numpy.array(superposed_coords))
         if args.prism:
-            mass = numpy.array([IMP.atom.Mass(p).get_mass() for p in superposed_ps])
-            radii = numpy.array([IMP.core.XYZR(p).get_radius() for p in superposed_ps])
-            numpy.savez(prism_file,numpy.array(superposed_coords_cluster), mass, radii, numpy.array(ps_names))
-            
+            mass = \
+                numpy.array(
+                    [IMP.atom.Mass(p).get_mass() for p in superposed_ps])
+            radii = \
+                numpy.array(
+                    [IMP.core.XYZR(p).get_radius() for p in superposed_ps])
+            numpy.savez(
+                prism_file,
+                numpy.array(superposed_coords_cluster),
+                mass, radii, numpy.array(ps_names))
         cluster_precision /= float(len(cluster_members[clus]) - 1.0)
-        
         print("Cluster precision (average distance to cluster centroid) "
               "of cluster ", str(i), " is %.3f" % cluster_precision, "A",
               file=fpc)
